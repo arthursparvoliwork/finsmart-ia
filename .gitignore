@@ -1,0 +1,130 @@
+# =========================================================
+# .gitignore do FinSmart IA
+# Diz ao Git quais arquivos NUNCA subir para o GitHub
+# =========================================================
+
+# ---------------------------------------------------------
+# SEGURANÇA (CRÍTICO!) - Nunca subir senhas, tokens, chaves
+# ---------------------------------------------------------
+.env
+.env.local
+.env.*.local
+*.key
+*.pem
+secrets.json
+
+# ---------------------------------------------------------
+# PYTHON (backend)
+# ---------------------------------------------------------
+__pycache__/           # Arquivos compilados do Python (cache)
+*.py[cod]              # Arquivos .pyc, .pyo, .pyd
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Ambientes virtuais (pesados e específicos de cada máquina)
+venv/
+env/
+ENV/
+.venv/
+env.bak/
+venv.bak/
+
+# Ferramentas de teste/qualidade
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.mypy_cache/
+.ruff_cache/
+
+# Modelos de ML treinados (muito pesados para o GitHub)
+*.pkl
+*.pickle
+*.h5
+*.keras
+models/saved/
+
+# Jupyter Notebook (checkpoints)
+.ipynb_checkpoints/
+
+# ---------------------------------------------------------
+# NODE.JS (frontend React)
+# ---------------------------------------------------------
+node_modules/          # Milhares de dependências (não subir!)
+/.pnp
+.pnp.js
+
+# Build de produção
+/build
+/dist
+.next/
+out/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+logs/
+*.log
+
+# ---------------------------------------------------------
+# SISTEMA OPERACIONAL (sujeira que cada SO cria)
+# ---------------------------------------------------------
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Linux
+*~
+
+# ---------------------------------------------------------
+# EDITORES / IDEs
+# ---------------------------------------------------------
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+
+# ---------------------------------------------------------
+# BANCO DE DADOS (desenvolvimento local)
+# ---------------------------------------------------------
+*.db
+*.sqlite
+*.sqlite3
+instance/
+
+# ---------------------------------------------------------
+# DADOS SENSÍVEIS / ARQUIVOS DE EXEMPLO
+# ---------------------------------------------------------
+data/raw/
+data/processed/
+!data/.gitkeep
