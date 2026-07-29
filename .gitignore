@@ -17,7 +17,9 @@ secrets.json
 # PYTHON (backend)
 # ---------------------------------------------------------
 __pycache__/           # Arquivos compilados do Python (cache)
+**/__pycache__/
 *.py[cod]              # Arquivos .pyc, .pyo, .pyd
+*.pyc
 *$py.class
 *.so
 .Python

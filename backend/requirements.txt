@@ -1,0 +1,42 @@
+# =========================================================
+# Dependências do Backend - FinSmart IA
+# =========================================================
+# Instale com:  pip install -r requirements.txt
+# Sempre ative o venv ANTES de instalar!
+# =========================================================
+
+# ---------------------------------------------------------
+# WEB / API
+# ---------------------------------------------------------
+Flask==3.0.3                  # Framework web principal (API REST)
+Flask-CORS==4.0.1             # Permite o frontend (React) chamar o backend (CORS)
+
+# ---------------------------------------------------------
+# BANCO DE DADOS
+# ---------------------------------------------------------
+Flask-SQLAlchemy==3.1.1       # ORM: transforma tabelas SQL em classes Python
+SQLAlchemy==2.0.32            # (dependência do Flask-SQLAlchemy, fixada explicitamente)
+
+# ---------------------------------------------------------
+# VALIDAÇÃO DE DADOS (SOLID: Single Responsibility)
+# ---------------------------------------------------------
+pydantic==2.8.2               # Validação de dados com tipagem
+pydantic-settings==2.4.0      # Carrega config do .env com validação
+email-validator==2.2.0        # Pydantic usa pra validar formato de email
+
+# ---------------------------------------------------------
+# SEGURANÇA / AUTENTICAÇÃO
+# ---------------------------------------------------------
+PyJWT==2.9.0                  # Geração e validação de tokens JWT
+bcrypt==4.2.0                 # Hash de senhas (NUNCA salve senhas em texto puro!)
+
+# ---------------------------------------------------------
+# CONFIGURAÇÃO
+# ---------------------------------------------------------
+python-dotenv==1.0.1          # Carrega variáveis de ambiente do arquivo .env
+
+# ---------------------------------------------------------
+# TESTES
+# ---------------------------------------------------------
+pytest==8.3.2                 # Framework de testes
+pytest-cov==5.0.0             # Mede cobertura de testos (% do código testado)
