@@ -1,0 +1,66 @@
+/*
+ * index.css — Estilos globais do FinSmart IA.
+ *
+ * Tailwind CSS v4 (configuração INLINE no CSS, sem tailwind.config.js).
+ * - @import "tailwindcss": carrega todas as utilidades do Tailwind.
+ * - @theme: define cores/tokens personalizados do projeto.
+ */
+@import "tailwindcss";
+
+/* =========================================================
+ * TEMA — cores e tokens personalizados do projeto.
+ * No Tailwind v4, usamos @theme em vez de tailwind.config.js.
+ * Ex: bg-brand-500 usa a cor definida em --color-brand-500.
+ * ========================================================= */
+@theme {
+  /* Cor principal da marca (roxo/azul financeiro) */
+  --color-brand-50: #f5f3ff;
+  --color-brand-100: #ede9fe;
+  --color-brand-200: #ddd6fe;
+  --color-brand-300: #c4b5fd;
+  --color-brand-400: #a78bfa;
+  --color-brand-500: #8b5cf6;
+  --color-brand-600: #7c3aed;
+  --color-brand-700: #6d28d9;
+  --color-brand-800: #5b21b6;
+  --color-brand-900: #4c1d95;
+
+  /* Cores semânticas (sucesso/erro) */
+  --color-success: #10b981;
+  --color-danger: #ef4444;
+  --color-warning: #f59e0b;
+
+  /* Fonte */
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+/* =========================================================
+ * RESET BÁSICO
+ * ========================================================= */
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #f8fafc;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+/* Scrollbar customizada (detalhe profissional) */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #c4b5fd;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #a78bfa;
+}
