@@ -36,6 +36,12 @@ bcrypt==4.2.0                 # Hash de senhas (NUNCA salve senhas em texto puro
 python-dotenv==1.0.1          # Carrega variáveis de ambiente do arquivo .env
 
 # ---------------------------------------------------------
+# MACHINE LEARNING
+# ---------------------------------------------------------
+scikit-learn==1.5.2           # Classificação ML (categorização de transações)
+joblib==1.4.2                # Salva/carrega modelos treinados (.pkl)
+
+# ---------------------------------------------------------
 # TESTES
 # ---------------------------------------------------------
 pytest==8.3.2                 # Framework de testes

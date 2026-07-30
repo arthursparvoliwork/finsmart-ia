@@ -1,48 +1,28 @@
 /**
- * DashboardPage.jsx — Página principal do dashboard.
+ * DashboardPage.jsx — Página principal do dashboard (CONECTADA À API REAL).
  *
- * 🎓 O que mostra:
- * - Cards de resumo (total receitas, despesas, saldo)
- * - Gráfico de barras (gastos por mês) com Recharts
- * - Animações de entrada com Framer Motion (staggered = uma após outra)
- *
- * 🎓 Framer Motion 'stagger':
- * Cada card aparece com um pequeno atraso (0.1s entre eles),
- * criando efeito "cascata". Muito mais profissional que tudo de uma vez.
+ * 🎓 DIFERENÇA vs versão anterior:
+ * Agora busca dados REAIS do backend via getSummary() e listTransactions().
+ * Os cards e gráficos refletem as transações reais do usuário.
  */
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer, Legend,
 } from 'recharts'
 import { useAuth } from '@/contexts/AuthContext'
+import { getSummary, listTransactions } from '@/api/transactions'
 
-// Dados mock (vamos conectar com a API real na Fase 2b)
-const DADOS_GRAFICO = [
-  { mes: 'Jan', receitas: 5200, despesas: 3800 },
-  { mes: 'Fev', receitas: 5800, despesas: 4100 },
-  { mes: 'Mar', receitas: 4900, despesas: 3600 },
-  { mes: 'Abr', receitas: 6100, despesas: 4500 },
-  { mes: 'Mai', receitas: 5500, despesas: 3900 },
-  { mes: 'Jun', receitas: 6400, despesas: 4200 },
-]
-
-// Animação staggered: cada filho aparece com delay crescente
 const containerVariants = {
   hidden: {},
-  visible: {
-    transition: {
-      staggerChildren: 0.1, // 0.1s entre cada card
-    },
-  },
+  visible: { transition: { staggerChildren: 0.1 } },
 }
-
 const cardVariants = {
   hidden: { opacity: 0, y: 20 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
 }
 
-// Cards de resumo
 function SummaryCard({ title, value, icon, color }) {
   return (
     <motion.div
@@ -64,16 +44,39 @@ function SummaryCard({ title, value, icon, color }) {
 
 export default function DashboardPage() {
   const { user, logout } = useAuth()
+  const [resumo, setResumo] = useState({
+    total_receitas: 0, total_despesas: 0, saldo: 0
+  })
+  const [grafico, setGrafico] = useState([])
+  const [loading, setLoading] = useState(true)
 
-  // Calcula totais (mock)
-  const totalReceitas = DADOS_GRAFICO.reduce((s, d) => s + d.receitas, 0)
-  const totalDespesas = DADOS_GRAFICO.reduce((s, d) => s + d.despesas, 0)
-  const saldo = totalReceitas - totalDespesas
+  useEffect(() => {
+    async function carregar() {
+      try {
+        const [s, transacoes] = await Promise.all([getSummary(), listTransactions()])
+        setResumo(s)
+
+        // Agrupa por mês pra fazer o gráfico
+        const porMes = {}
+        transacoes.forEach((t) => {
+          const mes = new Date(t.data).toLocaleDateString('pt-BR', { month: 'short' })
+          if (!porMes[mes]) porMes[mes] = { mes, receitas: 0, despesas: 0 }
+          if (t.tipo === 'receita') porMes[mes].receitas += parseFloat(t.valor)
+          else porMes[mes].despesas += parseFloat(t.valor)
+        })
+        setGrafico(Object.values(porMes))
+      } catch (e) {
+        // silencioso: dados começam vazios
+      } finally {
+        setLoading(false)
+      }
+    }
+    carregar()
+  }, [])
 
   function formatCurrency(value) {
     return new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL',
+      style: 'currency', currency: 'BRL'
     }).format(value)
   }
 
@@ -91,6 +94,9 @@ export default function DashboardPage() {
           <h1 className="text-xl font-bold text-brand-700">FinSmart IA</h1>
         </div>
         <div className="flex items-center gap-4">
+          <a href="/transactions" className="text-sm text-brand-600 hover:text-brand-700 font-medium">
+            Transações
+          </a>
           <span className="text-sm text-slate-600">
             Olá, <strong>{user?.name}</strong>
           </span>
@@ -116,34 +122,19 @@ export default function DashboardPage() {
           📊 Dashboard
         </motion.h2>
 
-        {/* Cards de resumo (staggered) */}
+        {/* Cards */}
         <motion.div
           className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8"
           variants={containerVariants}
           initial="hidden"
           animate="visible"
         >
-          <SummaryCard
-            title="Total Receitas"
-            value={formatCurrency(totalReceitas)}
-            icon="📈"
-            color="bg-emerald-100"
-          />
-          <SummaryCard
-            title="Total Despesas"
-            value={formatCurrency(totalDespesas)}
-            icon="📉"
-            color="bg-red-100"
-          />
-          <SummaryCard
-            title="Saldo"
-            value={formatCurrency(saldo)}
-            icon="💰"
-            color="bg-brand-100"
-          />
+          <SummaryCard title="Total Receitas" value={formatCurrency(resumo.total_receitas)} icon="📈" color="bg-emerald-100" />
+          <SummaryCard title="Total Despesas" value={formatCurrency(resumo.total_despesas)} icon="📉" color="bg-red-100" />
+          <SummaryCard title="Saldo" value={formatCurrency(resumo.saldo)} icon="💰" color="bg-brand-100" />
         </motion.div>
 
-        {/* Gráfico de barras */}
+        {/* Gráfico */}
         <motion.div
           className="bg-white rounded-xl shadow-sm border border-slate-100 p-6"
           initial={{ opacity: 0, y: 20 }}
@@ -151,25 +142,31 @@ export default function DashboardPage() {
           transition={{ delay: 0.6, duration: 0.5 }}
         >
           <h3 className="text-lg font-semibold text-slate-700 mb-4">
-            Receitas vs Despesas (6 meses)
+            Receitas vs Despesas
           </h3>
-          <ResponsiveContainer width="100%" height={350}>
-            <BarChart data={DADOS_GRAFICO}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-              <XAxis dataKey="mes" tick={{ fontSize: 13, fill: '#64748b' }} />
-              <YAxis tick={{ fontSize: 13, fill: '#64748b' }} tickFormatter={(v) => `R$${(v / 1000).toFixed(0)}k`} />
-              <Tooltip
-                formatter={(value) => formatCurrency(value)}
-                contentStyle={{ borderRadius: '8px', border: '1px solid #e2e8f0' }}
-              />
-              <Legend />
-              <Bar dataKey="receitas" fill="#8b5cf6" radius={[4, 4, 0, 0]} name="Receitas" />
-              <Bar dataKey="despesas" fill="#ef4444" radius={[4, 4, 0, 0]} name="Despesas" />
-            </BarChart>
-          </ResponsiveContainer>
+          {loading ? (
+            <p className="text-slate-400 text-center py-8">Carregando gráfico...</p>
+          ) : grafico.length === 0 ? (
+            <p className="text-slate-400 text-center py-8">
+              Adicione transações para ver o gráfico.
+              <a href="/transactions" className="text-brand-600 hover:underline ml-1">Adicionar →</a>
+            </p>
+          ) : (
+            <ResponsiveContainer width="100%" height={350}>
+              <BarChart data={grafico}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                <XAxis dataKey="mes" tick={{ fontSize: 13, fill: '#64748b' }} />
+                <YAxis tick={{ fontSize: 13, fill: '#64748b' }} tickFormatter={(v) => `R$${(v / 1000).toFixed(0)}k`} />
+                <Tooltip formatter={(value) => formatCurrency(value)} contentStyle={{ borderRadius: '8px', border: '1px solid #e2e8f0' }} />
+                <Legend />
+                <Bar dataKey="receitas" fill="#8b5cf6" radius={[4, 4, 0, 0]} name="Receitas" />
+                <Bar dataKey="despesas" fill="#ef4444" radius={[4, 4, 0, 0]} name="Despesas" />
+              </BarChart>
+            </ResponsiveContainer>
+          )}
         </motion.div>
 
-        {/* Placeholder para próximos passos */}
+        {/* Próximos passos */}
         <motion.div
           className="mt-8 bg-brand-50 rounded-xl border border-brand-100 p-6 text-center"
           initial={{ opacity: 0 }}
@@ -177,10 +174,7 @@ export default function DashboardPage() {
           transition={{ delay: 0.8 }}
         >
           <p className="text-brand-700 font-medium">
-            🚀 Em breve: categorização por IA, chat inteligente, detecção de anomalias e visual 3D!
-          </p>
-          <p className="text-brand-500 text-sm mt-2">
-            Fase 3 (Scikit-Learn) → Fase 4 (LangChain) → Fase 5 (Three.js + GSAP)
+            🚀 Em breve: chat com IA (LangChain), detecção de anomalias (TensorFlow) e visual 3D (Three.js + GSAP)!
           </p>
         </motion.div>
       </main>

@@ -52,8 +52,10 @@ def create_app(testing: bool = False) -> Flask:
 def _register_blueprints(app: Flask) -> None:
     """Conecta todos os blueprints (rotas) ao app."""
     from app.routes.auth import auth_bp
+    from app.routes.transactions import transactions_bp
 
     app.register_blueprint(auth_bp, url_prefix="/api/auth")
+    app.register_blueprint(transactions_bp, url_prefix="/api/transactions")
 
 
 def _register_error_handlers(app: Flask) -> None:

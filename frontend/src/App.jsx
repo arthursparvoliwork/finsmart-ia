@@ -1,26 +1,17 @@
 /**
  * App.jsx — Componente raiz do React.
  *
- * 🎓 React Router v7:
- * - BrowserRouter: habilita rotas (URLs diferentes = páginas diferentes)
- * - Routes: agrupa todas as rotas
- * - Route: define cada rota (path + componente)
- * - Navigate: redireciona automaticamente
- *
- * A estrutura:
- * AuthProvider (fornece dados de login pra todos)
- *   → BrowserRouter (rotas)
- *     → Routes
- *       → /login → LoginPage (qualquer um acessa)
- *       → /dashboard → ProtectedRoute (só logado)
- *         → DashboardPage
- *       → / → redireciona pra /dashboard
+ * Rotas:
+ *   /login         → tela de login/cadastro
+ *   /dashboard     → dashboard (protegido)
+ *   /transactions  → transações + IA (protegido)
  */
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider } from '@/contexts/AuthContext'
 import ProtectedRoute from '@/components/layout/ProtectedRoute'
 import LoginPage from '@/pages/auth/LoginPage'
 import DashboardPage from '@/pages/dashboard/DashboardPage'
+import TransactionsPage from '@/pages/transactions/TransactionsPage'
 
 export default function App() {
   return (
@@ -39,11 +30,19 @@ export default function App() {
               </ProtectedRoute>
             }
           />
+          <Route
+            path="/transactions"
+            element={
+              <ProtectedRoute>
+                <TransactionsPage />
+              </ProtectedRoute>
+            }
+          />
 
           {/* Rota padrão: redireciona */}
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
 
-          {/* 404 (qualquer rota inválida) */}
+          {/* 404 */}
           <Route path="*" element={
             <div className="min-h-screen flex items-center justify-center">
               <div className="text-center">
@@ -53,7 +52,7 @@ export default function App() {
                   Voltar ao dashboard
                 </a>
               </div>
-            </div>
+              </div>
           } />
         </Routes>
       </BrowserRouter>
